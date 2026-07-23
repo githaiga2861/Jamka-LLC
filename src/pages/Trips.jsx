@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { AddressField, Empty, Field, Icon, Modal } from "../components/ui.jsx";
-import { computeLegs, fmtDate, fmtDateTime, matchTripByDate, money, num, splitPay } from "../lib/calc.js";
-import { deleteTrip, saveTrip } from "../lib/store.js";
+import { computeLegs, findPriorTrip, fmtDate, fmtDateTime, matchTripByDate, money, num, splitPay } from "../lib/calc.js";
+import { deleteTrip, recomputeAllMileage, saveTrip } from "../lib/store.js";
 
 const CAT_LABEL = {
   fuel: "Fuel", toll: "Tolls", repairs: "Repairs & auto parts", wash: "Truck wash",
@@ -11,6 +11,13 @@ const CAT_LABEL = {
 export default function Trips({ trips, expenses, incomes, refresh }) {
   const [adding, setAdding] = useState(false);
   const [openTrip, setOpenTrip] = useState(null);
+  const [recalcing, setRecalcing] = useState(false);
+
+  const recalcAll = async () => {
+    setRecalcing(true);
+    try { await recomputeAllMileage(trips); await refresh(); }
+    finally { setRecalcing(false); }
+  };
 
   return (
     <div>
@@ -21,6 +28,12 @@ export default function Trips({ trips, expenses, incomes, refresh }) {
         </div>
         <button className="btn small" onClick={() => setAdding(true)}>{Icon.plus(16)} New trip</button>
       </div>
+
+      {trips.length > 1 && (
+        <button className="btn ghost small" style={{ marginBottom: 14 }} disabled={recalcing} onClick={recalcAll}>
+          {recalcing ? "Recalculating every trip's miles…" : <>{Icon.route(15)} Recalculate all mileage</>}
+        </button>
+      )}
 
       {trips.length === 0 ? (
         <Empty text="No trips yet. Tap New trip to enter your first rate confirmation." />
@@ -38,7 +51,13 @@ export default function Trips({ trips, expenses, incomes, refresh }) {
                     <span className="muted" style={{ fontWeight: 500 }}> · {t.broker}</span>
                   </div>
                   <div className="muted">
-                    {t.first_pickup ? fmtDate(t.first_pickup) : ""} · {num(t.loaded_miles)} loaded mi
+                    {t.first_pickup ? fmtDate(t.first_pickup) : "?"}
+                    {" → "}
+                    {t.last_delivery ? fmtDate(t.last_delivery) : "?"}
+                  </div>
+                  <div className="muted">
+                    {num(t.loaded_miles)} loaded mi
+                    {t.empty_miles > 0 && <> · {num(t.empty_miles)} empty mi</>}
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
@@ -103,11 +122,8 @@ function NewTripWizard({ trips, onClose, onSaved }) {
         }
         if (s.lat == null) throw new Error(`Could not find "${s.address}" on the map. Check the spelling or add the city and state.`);
       }
-      // previous trip's last delivery = start point for empty miles
-      const firstPickupTime = new Date(stops[0].at).getTime();
-      const prior = trips
-        .filter((t) => t.last_delivery && new Date(t.last_delivery).getTime() <= firstPickupTime)
-        .sort((a, b) => new Date(b.last_delivery) - new Date(a.last_delivery))[0];
+      // most recently ended trip's last delivery = start point for empty miles
+      const prior = findPriorTrip(trips, stops[0].at);
       const prevDelivery = prior
         ? [...prior.stops].reverse().find((s) => s.kind === "delivery" && s.lat != null)
         : null;
@@ -316,7 +332,7 @@ function TripProfile({ trip, expenses, incomes, onClose, onDeleted }) {
           <tr><td>Gross pay</td><td>{money(trip.gross_pay)}</td></tr>
           <tr><td>United Transport 20%</td><td>− {money(trip.gross_pay * 0.2)}</td></tr>
           <tr><td>Loaded miles</td><td>{num(trip.loaded_miles)} mi</td></tr>
-          <tr><td>Empty miles</td><td>{num(trip.empty_miles)} mi</td></tr>
+          {trip.empty_miles > 0 && <tr><td>Empty miles</td><td>{num(trip.empty_miles)} mi</td></tr>}
           <tr><td>Pay per mile (all miles)</td>
             <td>{(trip.loaded_miles + trip.empty_miles) > 0 ? money(trip.gross_pay / (trip.loaded_miles + trip.empty_miles)) : "—"}/mi</td></tr>
         </tbody></table>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Icon, InstallPrompt } from "./components/ui.jsx";
+import { Icon } from "./components/ui.jsx";
 import Landing from "./pages/Landing.jsx";
 import Trips from "./pages/Trips.jsx";
 import Money from "./pages/Money.jsx";
@@ -84,8 +84,6 @@ export default function App() {
           </button>
         ))}
       </nav>
-
-      <InstallPrompt />
     </div>
   );
 }

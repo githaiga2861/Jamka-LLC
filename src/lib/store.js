@@ -1,4 +1,5 @@
 import { supabase, sha256 } from "./supabase.js";
+import { computeLegs, findPriorTrip } from "./calc.js";
 
 // ---------- PIN ----------
 export async function checkPin(pin) {
@@ -34,6 +35,42 @@ export async function saveTrip(trip, stops) {
 export async function deleteTrip(id) {
   const { error } = await supabase.from("trips").delete().eq("id", id);
   if (error) throw error;
+}
+
+/**
+ * Re-measures loaded and empty miles for every saved trip, oldest first, so
+ * each trip's empty miles correctly start from the delivery address of the
+ * trip that most recently ended before it — even trips saved before this
+ * chain existed or before a trip that now sits earlier in time was added.
+ */
+export async function recomputeAllMileage(trips) {
+  const ordered = [...trips]
+    .filter((t) => t.first_pickup)
+    .sort((a, b) => new Date(a.first_pickup) - new Date(b.first_pickup));
+
+  const done = [];
+  for (const trip of ordered) {
+    const stops = (trip.stops || [])
+      .filter((s) => s.lat != null)
+      .sort((a, b) => new Date(a.at) - new Date(b.at));
+    if (!stops.length) { done.push(trip); continue; }
+
+    const prior = findPriorTrip(done, stops[0].at);
+    const prevDelivery = prior
+      ? [...(prior.stops || [])].filter((s) => s.kind === "delivery" && s.lat != null)
+          .sort((a, b) => new Date(a.at) - new Date(b.at)).slice(-1)[0]
+      : null;
+
+    const { legs, loadedMiles, emptyMiles } = await computeLegs(stops, prevDelivery);
+    const { error } = await supabase
+      .from("trips")
+      .update({ loaded_miles: loadedMiles, empty_miles: emptyMiles, legs })
+      .eq("id", trip.id);
+    if (error) throw error;
+
+    done.push({ ...trip, loaded_miles: loadedMiles, empty_miles: emptyMiles, legs });
+  }
+  return done;
 }
 
 // ---------- Expenses ----------

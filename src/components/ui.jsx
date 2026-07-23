@@ -194,7 +194,10 @@ export function AddressField({ label, hint, value, onPick }) {
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState(null);
   const [showIOS, setShowIOS] = useState(false);
-  const [dismissed, setDismissed] = useState(() => sessionStorage.getItem("pwa-dismissed") === "1");
+  // Deliberately not persisted anywhere: dismissing only hides it for this
+  // visit. It comes back every time this component mounts again, i.e. every
+  // time the landing page loads, until the app is actually installed.
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
@@ -207,7 +210,7 @@ export function InstallPrompt() {
   }, []);
 
   if (dismissed || (!deferred && !showIOS)) return null;
-  const close = () => { setDismissed(true); sessionStorage.setItem("pwa-dismissed", "1"); };
+  const close = () => setDismissed(true);
 
   return (
     <div style={{ position: "fixed", left: 12, right: 12, bottom: "calc(70px + env(safe-area-inset-bottom))", zIndex: 55 }}>

@@ -25,8 +25,8 @@ body {
   background-color: var(--white);
   /* faint paper texture */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.52 0 0 0 0 0.44 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16.5px;
+  line-height: 1.55;
 }
 
 /* ---------- gold border helpers ---------- */
@@ -41,8 +41,8 @@ body {
 button { font-family: inherit; cursor: pointer; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px 20px; border-radius: 12px;
-  font-weight: 600; font-size: 14px; letter-spacing: 0.02em;
+  padding: 14px 22px; border-radius: 13px; min-height: 48px;
+  font-weight: 600; font-size: 15.5px; letter-spacing: 0.02em;
   color: #ffffff;
   border: 1px solid transparent;
   background:
@@ -61,7 +61,7 @@ button { font-family: inherit; cursor: pointer; }
 .btn:hover::after, .btn:focus-visible::after { transform: translateX(120%); }
 .btn:active { transform: translateY(1px) scale(0.99); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn.small { padding: 8px 14px; font-size: 13px; border-radius: 10px; }
+.btn.small { padding: 10px 16px; font-size: 14px; border-radius: 10px; min-height: 40px; }
 .btn.ghost {
   color: var(--ink);
   background:
@@ -95,8 +95,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 @media (min-width: 640px) { .modal-backdrop { align-items: center; } }
 .modal {
-  width: 100%; max-width: 560px; max-height: 92dvh; overflow-y: auto;
-  border-radius: 22px 22px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+  width: 100%; max-width: 600px; max-height: 94dvh; overflow-y: auto;
+  border-radius: 24px 24px 0 0; padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
   border: 1px solid transparent;
   background:
     linear-gradient(180deg, #fffefb 0%, #faf7ef 100%) padding-box,
@@ -111,17 +111,18 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-.modal h3 { font-family: var(--font-display); font-size: 19px; letter-spacing: 0.03em; }
-.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.modal-close { background: none; border: none; padding: 6px; color: var(--muted); }
+.modal h3 { font-family: var(--font-display); font-size: 21.5px; letter-spacing: 0.03em; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.modal-close { background: none; border: none; padding: 8px; color: var(--muted); min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
 
 /* ---------- forms ---------- */
-.field { margin-bottom: 14px; }
-.field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 5px; }
-.field .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-weight: 600; font-size: 14.5px; margin-bottom: 6px; }
+.field .hint { font-size: 13px; color: var(--muted); margin-top: 5px; line-height: 1.45; }
 .field input, .field select, .field textarea {
-  width: 100%; padding: 11px 12px; font: inherit; color: var(--ink);
-  border-radius: 11px; border: 1px solid var(--hairline); background: #fff;
+  width: 100%; padding: 13px 14px; font: inherit; font-size: 16px; color: var(--ink);
+  border-radius: 12px; border: 1px solid var(--hairline); background: #fff;
+  min-height: 48px;
   transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
 .field input:focus, .field select:focus, .field textarea:focus {
@@ -136,8 +137,8 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: var(--shadow-deep);
 }
 .suggest-list button {
-  display: block; width: 100%; text-align: left; padding: 10px 12px;
-  background: #fff; border: none; border-bottom: 1px solid var(--hairline); font-size: 13px;
+  display: block; width: 100%; text-align: left; padding: 13px 14px;
+  background: #fff; border: none; border-bottom: 1px solid var(--hairline); font-size: 14.5px; line-height: 1.4;
 }
 .suggest-list button:last-child { border-bottom: none; }
 .suggest-list button:hover { background: #fdf8ea; }
@@ -165,16 +166,16 @@ button { font-family: inherit; cursor: pointer; }
   border-image: var(--gold-grad) 1;
 }
 .tab {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: none; border: none; color: var(--muted);
-  font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; padding: 4px 8px; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; color: var(--muted); min-height: 52px; min-width: 56px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.02em; padding: 6px 8px; border-radius: 10px;
 }
 .tab.active { color: var(--black); }
 .tab.active svg { filter: drop-shadow(0 1px 2px rgba(212, 175, 55, 0.5)); }
 .tab.active .tab-ic { color: var(--gold-3); }
 
-.page-title { font-family: var(--font-display); font-size: 22px; margin: 18px 2px 4px; letter-spacing: 0.03em; }
-.page-sub { color: var(--muted); font-size: 13px; margin: 0 2px 16px; }
+.page-title { font-family: var(--font-display); font-size: 25px; margin: 18px 2px 5px; letter-spacing: 0.03em; }
+.page-sub { color: var(--muted); font-size: 14px; margin: 0 2px 18px; line-height: 1.5; }
 
 .stack { display: grid; gap: 12px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -182,11 +183,11 @@ button { font-family: inherit; cursor: pointer; }
 .between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .muted { color: var(--muted); font-size: 13px; }
 .gold-text { background: var(--gold-grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 700; }
-.kpi { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
-.divider { height: 1px; background: var(--hairline); margin: 14px 0; }
+.kpi { font-size: 27px; font-weight: 700; letter-spacing: -0.01em; }
+.divider { height: 1px; background: var(--hairline); margin: 16px 0; }
 .pill {
-  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
-  font-size: 11.5px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600;
   border: 1px solid transparent;
   background: linear-gradient(#fdf8ea, #fdf8ea) padding-box, var(--gold-grad) border-box;
   color: var(--gold-3);
@@ -199,16 +200,16 @@ button { font-family: inherit; cursor: pointer; }
 
 .list-item {
   width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 10px;
-  padding: 13px 14px; background: var(--panel); border: none; border-bottom: 1px solid var(--hairline);
-  font: inherit; color: inherit;
+  padding: 16px 15px; background: var(--panel); border: none; border-bottom: 1px solid var(--hairline);
+  font: inherit; font-size: 14.5px; color: inherit; min-height: 56px;
 }
 .list-item:last-child { border-bottom: none; }
 .list-wrap { border-radius: var(--radius); overflow: hidden; border: 1px solid transparent;
   background: linear-gradient(var(--panel), var(--panel)) padding-box, var(--gold-grad) border-box;
   box-shadow: var(--shadow-soft); }
 
-table.mini { width: 100%; border-collapse: collapse; font-size: 13px; }
-table.mini td { padding: 7px 4px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+table.mini { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.mini td { padding: 9px 4px; border-bottom: 1px solid var(--hairline); vertical-align: top; line-height: 1.5; }
 table.mini tr:last-child td { border-bottom: none; }
 table.mini td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
 

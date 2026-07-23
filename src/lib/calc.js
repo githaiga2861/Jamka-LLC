@@ -79,6 +79,17 @@ function shortPlace(p) {
   return label.split(",").slice(0, 2).join(",") + (p.state ? `, ${p.state}` : "");
 }
 
+/**
+ * The trip that most recently ended before the given pickup time — its last
+ * delivery address is where the empty miles to the new trip start from.
+ */
+export function findPriorTrip(trips, beforeTime) {
+  const t = new Date(beforeTime).getTime();
+  return trips
+    .filter((tr) => tr.last_delivery && new Date(tr.last_delivery).getTime() <= t)
+    .sort((a, b) => new Date(b.last_delivery) - new Date(a.last_delivery))[0] || null;
+}
+
 /** Find the trip whose window (first pickup .. last delivery, padded 1 day) contains a moment. */
 export function matchTripByDate(trips, when) {
   const t = new Date(when).getTime();

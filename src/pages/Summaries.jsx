@@ -94,7 +94,12 @@ export default function Summaries({ trips, expenses, incomes, refresh, onOpenTri
                   <button key={t.id} className="list-item" onClick={() => { setDrill(null); onOpenTrip(t); }}>
                     <div>
                       <b>{from?.state || "?"} → {to?.state || "?"}</b> <span className="muted">· {t.broker}</span>
-                      <div className="muted">{fmtDate(t.first_pickup)} · {num(t.loaded_miles)} loaded / {num(t.empty_miles)} empty mi</div>
+                      <div className="muted">
+                      {fmtDate(t.first_pickup)} → {t.last_delivery ? fmtDate(t.last_delivery) : "?"}
+                    </div>
+                    <div className="muted">
+                      {num(t.loaded_miles)} loaded mi{t.empty_miles > 0 && <> · {num(t.empty_miles)} empty mi</>}
+                    </div>
                     </div>
                     <b>{money(t.net_pay)}</b>
                   </button>
