@@ -369,7 +369,7 @@ function TripProfile({ trip, expenses, incomes, onClose, onDeleted }) {
       )}
 
       <div className="card" style={{ marginBottom: 12 }}>
-        <div style={{ fontWeight: 700, marginBottom: 8 }}>Money on this trip</div>
+        <div style={{ fontWeight: 700, marginBottom: 8 }}>Financials on this trip</div>
         <table className="mini"><tbody>
           {tripExpenses.map((e) => (
             <tr key={e.id}>
@@ -387,7 +387,7 @@ function TripProfile({ trip, expenses, incomes, onClose, onDeleted }) {
             </tr>
           ))}
           {tripExpenses.length + tripIncomes.length === 0 && (
-            <tr><td className="muted">Nothing yet. Fuel and expenses you add in the Money tab land here automatically when their date falls inside this trip.</td><td /></tr>
+            <tr><td className="muted">Nothing yet. Fuel and expenses you add in the Financials tab land here automatically when their date falls inside this trip.</td><td /></tr>
           )}
         </tbody></table>
       </div>

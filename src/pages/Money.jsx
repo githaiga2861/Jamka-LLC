@@ -24,7 +24,7 @@ export default function Money({ trips, refresh }) {
 
   return (
     <div>
-      <h2 className="page-title">Money</h2>
+      <h2 className="page-title">Financials</h2>
       <p className="page-sub">
         Tap a card to record a cost or an income. Each entry drops into the right trip on its own,
         matched by date and time.

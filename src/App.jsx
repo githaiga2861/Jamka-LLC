@@ -11,7 +11,7 @@ import { configured } from "./lib/supabase.js";
 
 const TABS = [
   { key: "trips", label: "Trips", icon: "truck" },
-  { key: "money", label: "Money", icon: "wallet" },
+  { key: "money", label: "Financials", icon: "wallet" },
   { key: "summary", label: "Summary", icon: "chart" },
   { key: "analytics", label: "Analytics", icon: "gauge" },
   { key: "docs", label: "Docs", icon: "folder" },
