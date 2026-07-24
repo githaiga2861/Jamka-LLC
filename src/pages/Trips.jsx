@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { AddressField, Empty, Field, Icon, Modal } from "../components/ui.jsx";
+import { AddressField, Empty, Field, Hints, Icon, Modal } from "../components/ui.jsx";
 import { computeLegs, findPriorTrip, fmtDate, fmtDateTime, matchTripByDate, money, num, splitPay } from "../lib/calc.js";
 import { deleteTrip, recomputeAllMileage, saveTrip } from "../lib/store.js";
 
@@ -34,6 +34,15 @@ export default function Trips({ trips, expenses, incomes, refresh }) {
           {recalcing ? "Recalculating every trip's miles…" : <>{Icon.route(15)} Recalculate all mileage</>}
         </button>
       )}
+
+      <Hints
+        storageKey="hints-trips"
+        items={[
+          "Tap any trip in the list below to open its full profile — every stop, mile, and dollar filed under it.",
+          "When typing a pickup or delivery address, always tap one of the suggestions rather than leaving it as typed — that's what locks in exact mileage.",
+          "Enter fuel and other costs with their exact date and time in the Financials tab — the app files each one into the right trip on its own.",
+        ]}
+      />
 
       {trips.length === 0 ? (
         <Empty text="No trips yet. Tap New trip to enter your first rate confirmation." />

@@ -101,6 +101,11 @@ export const Icon = {
   logout: (s = 20) => (
     <svg width={s} height={s} viewBox="0 0 24 24" {...P}><path d="M9 4H5.5v16H9" /><path d="M13 8l4 4-4 4M17 12H9.5" /></svg>
   ),
+  info: (s = 18) => (
+    <svg width={s} height={s} viewBox="0 0 24 24" {...P}>
+      <circle cx="12" cy="12" r="8.5" /><path d="M12 11v5.5" /><circle cx="12" cy="8" r="0.4" fill="currentColor" />
+    </svg>
+  ),
   star: (s = 16) => (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3l2.6 5.6 6 .7-4.4 4.1 1.2 5.9L12 16.4 6.6 19.3l1.2-5.9L3.4 9.3l6-.7z" /></svg>
   ),
@@ -228,6 +233,33 @@ export function InstallPrompt() {
         )}
         <button className="modal-close" onClick={close} aria-label="Dismiss">{Icon.x(16)}</button>
       </div>
+    </div>
+  );
+}
+
+/* ---------------- Site hints: quiet, dismissible tips ---------------- */
+export function Hints({ storageKey, items }) {
+  const [hidden, setHidden] = useState(() => localStorage.getItem(storageKey) === "1");
+  if (hidden) return null;
+  return (
+    <div className="card" style={{ marginBottom: 16 }}>
+      <div className="between" style={{ marginBottom: 8 }}>
+        <div className="row" style={{ gap: 8 }}>
+          <span style={{ color: "var(--gold-3)" }}>{Icon.info(18)}</span>
+          <b style={{ fontSize: 13.5 }}>A few pointers</b>
+        </div>
+        <button className="modal-close" aria-label="Dismiss hints"
+          onClick={() => { localStorage.setItem(storageKey, "1"); setHidden(true); }}>
+          {Icon.x(16)}
+        </button>
+      </div>
+      <ul style={{ listStyle: "none", display: "grid", gap: 8 }}>
+        {items.map((t, i) => (
+          <li key={i} className="muted" style={{ fontSize: 13, lineHeight: 1.5, display: "flex", gap: 8 }}>
+            <span style={{ color: "var(--gold-2)" }}>—</span>{t}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
