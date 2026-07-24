@@ -369,7 +369,8 @@ function TripProfile({ trip, expenses, incomes, onClose, onDeleted }) {
             {trip.legs.map((l, i) => (
               <tr key={i}>
                 <td><span className={`pill ${l.type === "loaded" ? "dark" : ""}`}>{l.type === "loaded" ? "Loaded" : "Empty"}</span>
-                  <div style={{ marginTop: 4 }}>{l.from} → {l.to}</div></td>
+                  <div style={{ marginTop: 4 }}>{l.from} → {l.to}</div>
+                  {l.note && <div className="muted" style={{ marginTop: 2 }}>{l.note}</div>}</td>
                 <td>{num(l.miles)} mi</td>
               </tr>
             ))}

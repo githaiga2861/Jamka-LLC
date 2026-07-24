@@ -92,14 +92,19 @@ function shortPlace(p) {
 }
 
 /**
- * The trip that most recently ended before the given pickup time — its last
- * delivery address is where the empty miles to the new trip start from.
+ * The trip that immediately precedes this one — the trip with the latest
+ * first-pickup time that still starts before this trip's first pickup.
+ * This is deliberately based on PICKUP order, not on whether the prior
+ * trip's delivery timestamp happens to land before this trip's pickup
+ * timestamp — rate cons can be scheduled close together or even overlap
+ * on paper, and the immediately preceding trip in your sequence is still
+ * the right one to measure the empty run from.
  */
-export function findPriorTrip(trips, beforeTime) {
-  const t = new Date(beforeTime).getTime();
+export function findPriorTrip(trips, currentFirstPickup) {
+  const t = new Date(currentFirstPickup).getTime();
   return trips
-    .filter((tr) => tr.last_delivery && new Date(tr.last_delivery).getTime() <= t)
-    .sort((a, b) => new Date(b.last_delivery) - new Date(a.last_delivery))[0] || null;
+    .filter((tr) => tr.first_pickup && new Date(tr.first_pickup).getTime() < t)
+    .sort((a, b) => new Date(b.first_pickup) - new Date(a.first_pickup))[0] || null;
 }
 
 /** Short "Broker (delivered <date>)" text used to name the prior trip in leg notes. */
