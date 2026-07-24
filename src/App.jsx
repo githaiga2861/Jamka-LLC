@@ -73,7 +73,7 @@ export default function App() {
             onOpenTrip={() => setTab("trips")} />
         )}
         {tab === "analytics" && <Analytics trips={trips} expenses={expenses} incomes={incomes} />}
-        {tab === "docs" && <Documents docs={docs} refresh={refresh} />}
+        {tab === "docs" && <Documents docs={docs} trips={trips} refresh={refresh} />}
       </main>
 
       <nav className="tabbar">

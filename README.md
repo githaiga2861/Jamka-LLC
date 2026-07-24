@@ -52,4 +52,21 @@ npm run dev
 
 ## Stack
 
-Vite + React 18, Supabase (Postgres + Storage), OpenStreetMap Nominatim (address lookup), OSRM (road mileage). No paid APIs.
+Vite + React 18, Supabase (Postgres + Storage), OpenStreetMap Nominatim (address lookup), OSRM (road mileage). No paid APIs (except the optional document scanner below).
+
+## Optional: AI document scanning ("Scan a document" button on the Documents page)
+
+Reads rate confirmations, fuel receipts, and expense receipts from a photo or PDF and pre-fills the data for you to confirm. Requires an Anthropic API key (typically well under 1¢ per scan).
+
+1. Get an API key at https://console.anthropic.com (add a few dollars of credit).
+2. Install the Supabase CLI once and log in:
+```bash
+npm install -g supabase
+supabase login
+```
+3. From this project folder, set the secret and deploy the function (replace YOUR_PROJECT_REF with the ref in your Supabase URL, e.g. `ygcadxaekkmtqbyyzmxy`):
+```bash
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-YOUR-KEY --project-ref YOUR_PROJECT_REF
+supabase functions deploy read-document --project-ref YOUR_PROJECT_REF
+```
+That's it — the button works immediately, no app rebuild needed. The API key lives only inside Supabase, never in the app or the repo.
