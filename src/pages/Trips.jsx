@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { AddressField, Empty, Field, Hints, Icon, Modal } from "../components/ui.jsx";
-import { computeLegs, findPriorTrip, fmtDate, fmtDateTime, matchTripByDate, money, num, splitPay } from "../lib/calc.js";
+import { computeLegs, findPriorTrip, fmtDate, fmtDateTime, matchTripByDate, money, num, priorTripLabel, splitPay } from "../lib/calc.js";
 import { deleteTrip, recomputeAllMileage, saveTrip } from "../lib/store.js";
 
 const CAT_LABEL = {
@@ -137,7 +137,7 @@ function NewTripWizard({ trips, onClose, onSaved }) {
         ? [...prior.stops].reverse().find((s) => s.kind === "delivery" && s.lat != null)
         : null;
 
-      const result = await computeLegs(stops, prevDelivery);
+      const result = await computeLegs(stops, prevDelivery, priorTripLabel(prior));
       setCalc({ ...result, stops });
       setStep(3);
     } catch (e) {

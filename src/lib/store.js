@@ -1,5 +1,5 @@
 import { supabase, sha256 } from "./supabase.js";
-import { computeLegs, findPriorTrip } from "./calc.js";
+import { computeLegs, findPriorTrip, priorTripLabel } from "./calc.js";
 
 // ---------- PIN ----------
 export async function checkPin(pin) {
@@ -61,7 +61,7 @@ export async function recomputeAllMileage(trips) {
           .sort((a, b) => new Date(a.at) - new Date(b.at)).slice(-1)[0]
       : null;
 
-    const { legs, loadedMiles, emptyMiles } = await computeLegs(stops, prevDelivery);
+    const { legs, loadedMiles, emptyMiles } = await computeLegs(stops, prevDelivery, priorTripLabel(prior));
     const { error } = await supabase
       .from("trips")
       .update({ loaded_miles: loadedMiles, empty_miles: emptyMiles, legs })

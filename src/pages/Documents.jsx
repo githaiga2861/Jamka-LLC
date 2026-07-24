@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Empty, Field, Icon, Modal } from "../components/ui.jsx";
-import { computeLegs, findPriorTrip, fmtDate, matchTripByDate, money, num, splitPay } from "../lib/calc.js";
+import { computeLegs, findPriorTrip, fmtDate, matchTripByDate, money, num, priorTripLabel, splitPay } from "../lib/calc.js";
 import { readDocument } from "../lib/ai.js";
 import { geocode } from "../lib/geo.js";
 import { addExpense, deleteDocument, documentUrl, saveTrip, uploadDocument } from "../lib/store.js";
@@ -201,7 +201,7 @@ function RateconReview({ data, file, trips, onDone }) {
         ? [...(prior.stops || [])].filter((s) => s.kind === "delivery" && s.lat != null)
             .sort((a, b) => new Date(a.at) - new Date(b.at)).slice(-1)[0]
         : null;
-      const { legs, loadedMiles, emptyMiles } = await computeLegs(resolved, prevDelivery);
+      const { legs, loadedMiles, emptyMiles } = await computeLegs(resolved, prevDelivery, priorTripLabel(prior));
 
       setBusy("Saving the trip…");
       await saveTrip(

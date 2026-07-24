@@ -20,41 +20,53 @@ export function splitPay(gross) {
 }
 
 /**
- * Work out every leg of a trip from its stops.
- * Stops are sorted by time; a leg is LOADED while at least one load is on
- * the truck (picked up, not yet delivered), and EMPTY otherwise — which
- * covers 2 pickups + 1 delivery, deliver-then-pick-up-again, and so on.
- * prevDelivery = last drop-off of the previous trip, for empty miles to
- * reach this trip's first pickup.
+ * Work out every leg of a trip from its stops, chained onto the prior
+ * trip's last delivery (if any).
+ *
+ * The rule: a leg is EMPTY only when driving straight from a delivery to
+ * a pickup — that's the one moment the truck has genuinely dropped
+ * everything it was carrying and is running to collect new freight.
+ * Every other transition is LOADED:
+ *   pickup  -> pickup   loaded (already carrying, going to add more)
+ *   pickup  -> delivery loaded (carrying it there)
+ *   delivery-> delivery loaded (multi-drop: partial unload, rest still on board)
+ *   delivery-> pickup   EMPTY  (fully unloaded, driving to the next load)
+ * This one rule correctly covers 2 pickups + 1 delivery, 1 pickup + several
+ * deliveries (each delivery-to-delivery leg stays loaded), and genuine
+ * deliver-then-repickup gaps inside a single rate con.
+ *
+ * prevDelivery = last drop-off stop of the trip that most recently ended
+ * before this one — chained in as the first entry so the exact same rule
+ * measures the empty run into this trip's first pickup.
+ * priorTripLabel = short text naming that prior trip, so the leg note is
+ * specific ("Empty drive from the XYZ Co. trip delivered Jul 10...")
+ * instead of a generic phrase — makes it easy to verify which trip's
+ * delivery address was actually used.
  */
-export async function computeLegs(stops, prevDelivery) {
+export async function computeLegs(stops, prevDelivery, priorTripLabel) {
   const ordered = [...stops].sort((a, b) => new Date(a.at) - new Date(b.at));
+  const chain = prevDelivery ? [{ ...prevDelivery, __prior: true }, ...ordered] : ordered;
+
   const legs = [];
   let loadedTotal = 0;
   let emptyTotal = 0;
 
-  if (prevDelivery && ordered.length) {
-    const miles = await drivingMiles(prevDelivery, ordered[0]);
-    if (miles != null) {
-      legs.push(leg("empty", prevDelivery, ordered[0], miles, "Drive from last trip's drop-off to this pickup"));
-      emptyTotal += miles;
-    }
-  }
-
-  let onBoard = 0;
-  for (let i = 0; i < ordered.length - 1; i++) {
-    onBoard += ordered[i].kind === "pickup" ? 1 : -1;
-    if (onBoard < 0) onBoard = 0;
-    const from = ordered[i];
-    const to = ordered[i + 1];
+  for (let i = 0; i < chain.length - 1; i++) {
+    const from = chain[i];
+    const to = chain[i + 1];
     const miles = await drivingMiles(from, to);
     if (miles == null) continue;
-    if (onBoard > 0) {
+
+    const isEmpty = from.kind === "delivery" && to.kind === "pickup";
+    if (isEmpty) {
+      const note = from.__prior
+        ? `Empty drive from the ${priorTripLabel || "previous"} trip's last delivery to this pickup`
+        : "Empty drive inside this trip — fully dropped off, heading to the next pickup";
+      legs.push(leg("empty", from, to, miles, note));
+      emptyTotal += miles;
+    } else {
       legs.push(leg("loaded", from, to, miles, "Carrying freight"));
       loadedTotal += miles;
-    } else {
-      legs.push(leg("empty", from, to, miles, "Empty drive inside this trip (dropped off, heading to next pickup)"));
-      emptyTotal += miles;
     }
   }
 
@@ -88,6 +100,12 @@ export function findPriorTrip(trips, beforeTime) {
   return trips
     .filter((tr) => tr.last_delivery && new Date(tr.last_delivery).getTime() <= t)
     .sort((a, b) => new Date(b.last_delivery) - new Date(a.last_delivery))[0] || null;
+}
+
+/** Short "Broker (delivered <date>)" text used to name the prior trip in leg notes. */
+export function priorTripLabel(trip) {
+  if (!trip) return null;
+  return `${trip.broker}${trip.last_delivery ? ` — delivered ${fmtDate(trip.last_delivery)}` : ""}`;
 }
 
 /** Find the trip whose window (first pickup .. last delivery, padded 1 day) contains a moment. */
